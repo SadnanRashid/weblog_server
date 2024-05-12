@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.roleRights = exports.roles = void 0;
 const allRoles = {
-    user: ["user"],
+    user: [],
     admin: ["getUsers", "manageUsers"],
 };
 const roles = Object.keys(allRoles);
