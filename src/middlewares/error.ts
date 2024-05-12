@@ -12,8 +12,9 @@ const errorConverter = (
 ) => {
   let error = err;
   if (!(error instanceof ApiError)) {
-    const statusCode = error.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
-    const message = error.message || httpStatus[statusCode];
+    const statusCode: number =
+      error.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
+    const message: string = error.message || httpStatus.INTERNAL_SERVER_ERROR;
     error = new ApiError(statusCode, message, false, err.stack);
   }
   next(error);
@@ -25,7 +26,7 @@ const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  let { statusCode, message } = err;
+  let { statusCode, message }: { statusCode: number; message: string } = err;
   if (config.env === "production" && !err.isOperational) {
     statusCode = httpStatus.INTERNAL_SERVER_ERROR;
     message = httpStatus[httpStatus.INTERNAL_SERVER_ERROR];
