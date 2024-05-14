@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import path from "path";
 import Joi from "joi";
 
-dotenv.config({ path: path.join(__dirname, "../../.envv") });
+dotenv.config({ path: path.join(__dirname, "../../.env") });
 
 interface EnvVars {
   NODE_ENV: "production" | "development" | "test";
