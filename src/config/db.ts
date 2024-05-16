@@ -12,9 +12,11 @@ const db = {
       const res = await client.query(query);
       return res;
     } catch (err) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Some error cccured");
+      throw new ApiError(httpStatus.BAD_REQUEST, "Internal error");
     } finally {
       client.release();
     }
   },
 };
+
+export { db };

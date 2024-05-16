@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.pool = void 0;
 const pg_1 = require("pg");
 const app_1 = __importDefault(require("./app"));
 const config_1 = __importDefault(require("./config/config"));
@@ -12,6 +13,7 @@ const pool = new pg_1.Pool({
     connectionString: config_1.default.supabase.url,
     idleTimeoutMillis: 30000,
 });
+exports.pool = pool;
 // Connect to PostgreSQL
 pool.connect((err, client, done) => {
     if (err) {
@@ -19,7 +21,7 @@ pool.connect((err, client, done) => {
         process.exit(1); // Exit the process if connection fails
     }
     else {
-        client === null || client === void 0 ? void 0 : client.release();
+        done();
     }
     // If connection is successful
     logger_1.default.info("Connected to PostgreSQL");
