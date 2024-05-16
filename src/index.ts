@@ -8,6 +8,7 @@ let server: Server;
 
 const pool = new Pool({
   connectionString: config.supabase.url,
+  idleTimeoutMillis: 30000,
 });
 
 // Connect to PostgreSQL
@@ -15,6 +16,8 @@ pool.connect((err, client, done) => {
   if (err) {
     logger.error("Error connecting to PostgreSQL:", err);
     process.exit(1); // Exit the process if connection fails
+  } else {
+    done();
   }
   // If connection is successful
   logger.info("Connected to PostgreSQL");
@@ -67,3 +70,5 @@ process.on("SIGTERM", () => {
     server.close();
   }
 });
+
+export { pool };

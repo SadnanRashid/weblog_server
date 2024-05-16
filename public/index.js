@@ -10,12 +10,16 @@ const logger_1 = __importDefault(require("./config/logger"));
 let server;
 const pool = new pg_1.Pool({
     connectionString: config_1.default.supabase.url,
+    idleTimeoutMillis: 30000,
 });
 // Connect to PostgreSQL
 pool.connect((err, client, done) => {
     if (err) {
         logger_1.default.error("Error connecting to PostgreSQL:", err);
         process.exit(1); // Exit the process if connection fails
+    }
+    else {
+        client === null || client === void 0 ? void 0 : client.release();
     }
     // If connection is successful
     logger_1.default.info("Connected to PostgreSQL");

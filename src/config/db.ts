@@ -1,24 +1,20 @@
-const pg = require("pg");
-import config from "./config";
+import { pool } from "../index";
+import ApiError from "../utils/ApiError";
+import httpStatus from "http-status";
+import { PoolClient } from "pg";
 
-const pool = new Pool({
-  connectionString: config.supabase.url,
-});
+let client: PoolClient;
 
-const DB = {
-  query: function (query: string, callback: CallableFunction) {
-    pool.connect((err: Error, client: any, done: Function) => {
-      if (err) return callback(err);
-      client.query(query, (err: Error, results: Object) => {
-        done();
-        if (err) {
-          console.error("ERROR: ", err);
-        }
-        if (err) {
-          return callback(err);
-        }
-        callback(null, results.rows);
-      });
-    });
+const db = {
+  query: async function (query: string) {
+    try {
+      client = await pool.connect();
+      const res = await client.query(query);
+      return res;
+    } catch (err) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Some error cccured");
+    } finally {
+      client.release();
+    }
   },
 };
