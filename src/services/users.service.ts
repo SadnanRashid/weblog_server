@@ -2,10 +2,19 @@ import httpStatus from "http-status";
 import ApiError from "../utils/ApiError";
 import { db } from "../config/db";
 import { TUsers } from "../models/users.models";
+import bcrypt from "bcryptjs";
 
-const createUser = async (data: ) => {
-
-}
+const createUser = async (data: {
+  email: string;
+  name: string;
+  pass: string;
+}): Promise<TUsers> => {
+  const password: string = await bcrypt.hash(data.pass, 8);
+  let res: TUsers =
+    await db.queryOne(`INSERT INTO USERS (user_id, name, email, pass, created_at)
+    VALUES (uuid_generate_v4(),  '${data.name}', '${data.email}', '${password}', CURRENT_TIMESTAMP ) returning *`);
+  return res;
+};
 
 const isEmailTaken = async (queryEmail: string): Promise<Boolean> => {
   const result = await db.query(

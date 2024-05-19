@@ -17,6 +17,17 @@ const db = {
       client.release();
     }
   },
+  queryOne: async function (query: string) {
+    try {
+      client = await pool.connect();
+      const res = await client.query(query);
+      return res.rows[0];
+    } catch (err) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Internal error");
+    } finally {
+      client.release();
+    }
+  },
 };
 
 export { db };
