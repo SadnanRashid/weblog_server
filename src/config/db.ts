@@ -10,7 +10,7 @@ const db = {
     try {
       client = await pool.connect();
       const res = await client.query(query);
-      return res;
+      return res.rows;
     } catch (err) {
       throw new ApiError(httpStatus.BAD_REQUEST, "Internal error");
     } finally {

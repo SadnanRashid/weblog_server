@@ -25,7 +25,11 @@ const errorHandler = (err, req, res, next) => {
         message = http_status_1.default[http_status_1.default.INTERNAL_SERVER_ERROR];
     }
     res.locals.errorMessage = err.message;
-    const response = Object.assign({ code: statusCode, message }, (config_1.default.env === "development" && { stack: err.stack }));
+    const response = {
+        code: statusCode,
+        message,
+        ...(config_1.default.env === "development" && { stack: err.stack }),
+    };
     if (config_1.default.env === "development") {
         logger_1.default.error(err);
     }
