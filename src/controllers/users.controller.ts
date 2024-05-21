@@ -8,3 +8,5 @@ const getUser = catchAsync(async (req: Request, res: Response) => {
   const user = await userService.getUser(req.params.uid);
   res.send(user);
 });
+
+export const userController = { getUser };

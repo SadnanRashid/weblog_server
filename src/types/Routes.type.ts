@@ -1,8 +1,9 @@
 import { Router } from "express";
+import { IRouter } from "express";
 
 type DefaultRouteType = {
   path: string;
-  route: string;
+  route: IRouter;
 };
 
 type DefaultRoutesType = DefaultRouteType[];

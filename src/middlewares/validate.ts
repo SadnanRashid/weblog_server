@@ -24,4 +24,4 @@ const validate =
     return next();
   };
 
-module.exports = validate;
+export default validate;

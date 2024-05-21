@@ -19,4 +19,4 @@ const validate = (schema) => (req, res, next) => {
     Object.assign(req, value);
     return next();
 };
-module.exports = validate;
+exports.default = validate;
