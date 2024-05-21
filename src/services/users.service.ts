@@ -16,6 +16,13 @@ const createUser = async (data: {
   return res;
 };
 
+const getUser = async (uid: string): Promise<TUsers> => {
+  let res: TUsers = await db.queryOne(
+    `SELECT * FROM users WHERE user_id = '${uid}'`
+  );
+  return res;
+};
+
 const isEmailTaken = async (queryEmail: string): Promise<Boolean> => {
   const result = await db.query(
     `select email from users where email = '${queryEmail}'`
@@ -26,4 +33,4 @@ const isEmailTaken = async (queryEmail: string): Promise<Boolean> => {
   return false;
 };
 
-export { isEmailTaken };
+export const userService =  { getUser };
