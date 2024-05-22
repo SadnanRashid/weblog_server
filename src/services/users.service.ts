@@ -23,6 +23,20 @@ const getUser = async (uid: string): Promise<TUsers> => {
   return res;
 };
 
+const getUserByEmail = async (
+  email: string,
+  password: string
+): Promise<TUsers> => {
+  let res: TUsers = await db.queryOne(
+    `SELECT * FROM users WHERE email = '${email}'`
+  );
+  const decryptPassword = await bcrypt.hash(res.pass, 8);
+  if (!res || decryptPassword !== password) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Incorrect email or password");
+  }
+  return res;
+};
+
 const isEmailTaken = async (queryEmail: string): Promise<Boolean> => {
   const result = await db.query(
     `select email from users where email = '${queryEmail}'`
@@ -33,4 +47,4 @@ const isEmailTaken = async (queryEmail: string): Promise<Boolean> => {
   return false;
 };
 
-export const userService = { getUser };
+export const userService = { getUser, getUserByEmail, createUser };
