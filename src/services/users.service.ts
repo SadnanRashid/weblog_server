@@ -33,4 +33,4 @@ const isEmailTaken = async (queryEmail: string): Promise<Boolean> => {
   return false;
 };
 
-export const userService =  { getUser };
+export const userService = { getUser };

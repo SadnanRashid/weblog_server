@@ -111,3 +111,11 @@ const generateVerifyEmailToken = async (user: TUsers) => {
   );
   return verifyEmailToken;
 };
+
+export const tokenService = {
+  generateVerifyEmailToken,
+  generateAuthTokens,
+  generateToken,
+  verifyToken,
+  saveToken,
+};

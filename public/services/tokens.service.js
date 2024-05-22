@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.tokenService = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const moment_1 = __importDefault(require("moment"));
 const config_1 = __importDefault(require("../config/config"));
@@ -60,4 +61,11 @@ const generateVerifyEmailToken = async (user) => {
     const verifyEmailToken = generateToken(user.user_id, expires, token_1.tokenTypes.VERIFY_EMAIL);
     await saveToken(verifyEmailToken, user.user_id, expires, token_1.tokenTypes.VERIFY_EMAIL);
     return verifyEmailToken;
+};
+exports.tokenService = {
+    generateVerifyEmailToken,
+    generateAuthTokens,
+    generateToken,
+    verifyToken,
+    saveToken,
 };
