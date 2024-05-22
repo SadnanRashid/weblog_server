@@ -4,8 +4,8 @@
 //   StrategyOptions,
 // } from "passport-jwt";
 // import config from "./config";
-// import { tokenTypes } from "./tokens";
-// import { User } from "../models";
+// // import { tokenTypes } from "./tokens";
+// // import { User } from "../models";
 // import { Request } from "express";
 
 // interface Payload {
