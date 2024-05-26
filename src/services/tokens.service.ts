@@ -15,6 +15,7 @@ const generateToken = (
   type: string,
   secret: string = config.jwt.secret
 ) => {
+  console.log("generating token");
   const payload = {
     sub: userId,
     iat: moment().unix(),
@@ -80,6 +81,17 @@ const generateAuthTokens = async (user: TUsers) => {
     refreshTokenExpires,
     tokenTypes.REFRESH
   );
+
+  console.log({
+    access: {
+      token: accessToken,
+      expires: accessTokenExpires.toDate(),
+    },
+    refresh: {
+      token: refreshToken,
+      expires: refreshTokenExpires.toDate(),
+    },
+  });
 
   return {
     access: {

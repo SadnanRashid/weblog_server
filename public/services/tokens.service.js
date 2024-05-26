@@ -10,6 +10,7 @@ const config_1 = __importDefault(require("../config/config"));
 const token_1 = require("../config/token");
 const db_1 = require("../config/db");
 const generateToken = (userId, expires, type, secret = config_1.default.jwt.secret) => {
+    console.log("generating token");
     const payload = {
         sub: userId,
         iat: (0, moment_1.default)().unix(),
@@ -45,6 +46,16 @@ const generateAuthTokens = async (user) => {
     const refreshTokenExpires = (0, moment_1.default)().add(config_1.default.jwt.refreshExpirationDays, "days");
     const refreshToken = generateToken(user.user_id, refreshTokenExpires, token_1.tokenTypes.REFRESH);
     await saveToken(refreshToken, user.user_id, refreshTokenExpires, token_1.tokenTypes.REFRESH);
+    console.log({
+        access: {
+            token: accessToken,
+            expires: accessTokenExpires.toDate(),
+        },
+        refresh: {
+            token: refreshToken,
+            expires: refreshTokenExpires.toDate(),
+        },
+    });
     return {
         access: {
             token: accessToken,

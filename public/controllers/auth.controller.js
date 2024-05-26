@@ -11,6 +11,7 @@ const tokens_service_1 = require("../services/tokens.service");
 const auth_service_1 = require("../services/auth.service");
 const register = (0, catchAsync_1.default)(async (req, res) => {
     const user = await users_service_1.userService.createUser(req.body);
+    console.log(user);
     const tokens = await tokens_service_1.tokenService.generateAuthTokens(user);
     res.status(http_status_1.default.CREATED).send({ user, tokens });
 });

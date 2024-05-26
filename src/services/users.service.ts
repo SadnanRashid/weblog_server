@@ -13,6 +13,7 @@ const createUser = async (data: {
   let res: TUsers =
     await db.queryOne(`INSERT INTO USERS (user_id, name, email, pass, created_at)
     VALUES (uuid_generate_v4(),  '${data.name}', '${data.email}', '${password}', CURRENT_TIMESTAMP ) returning *`);
+  console.log(res);
   return res;
 };
 
