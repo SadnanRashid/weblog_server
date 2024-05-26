@@ -6,11 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.tokenService = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const moment_1 = __importDefault(require("moment"));
+const http_status_1 = __importDefault(require("http-status"));
 const config_1 = __importDefault(require("../config/config"));
+const ApiError_1 = __importDefault(require("../utils/ApiError"));
 const token_1 = require("../config/token");
 const db_1 = require("../config/db");
 const generateToken = (userId, expires, type, secret = config_1.default.jwt.secret) => {
-    console.log("generating token");
     const payload = {
         sub: userId,
         iat: (0, moment_1.default)().unix(),
@@ -20,25 +21,37 @@ const generateToken = (userId, expires, type, secret = config_1.default.jwt.secr
     return jsonwebtoken_1.default.sign(payload, secret);
 };
 const saveToken = async (token, userId, expires, type, blacklisted = false) => {
-    const tokenDoc = await db_1.db.queryOne(`INSERT INTO tokens (token, userref, expires, type, blacklisted) VALUES 
-    (
-        '${token}',
-        '${userId}',
-        '${expires}',
-        '${type}',
-        '${blacklisted}'
-    )
-    `);
-    return tokenDoc;
+    const expiresISO = expires.toISOString(); // Convert moment date to ISO string for PostgreSQL
+    const query = `INSERT INTO token (token, refuser, expires, type, blacklisted) VALUES (
+    '${token}',
+    '${userId}',
+    '${expiresISO}',
+    '${type}',
+    '${blacklisted}'
+  )`;
+    try {
+        const tokenDoc = await db_1.db.queryOne(query);
+        return tokenDoc;
+    }
+    catch (error) {
+        console.error("Error saving token:", error);
+        throw new ApiError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, "Internal error");
+    }
 };
 const verifyToken = async (token, type) => {
     const payload = jsonwebtoken_1.default.verify(token, config_1.default.jwt.secret);
-    const tokenDoc = await db_1.db.queryOne(`
-        SELECT * FROM tokens WHERE token = '${token}' AND user = '${payload.sub}' AND type = '${type}' AND blacklisted = false`);
-    if (!tokenDoc) {
-        throw new Error("Token not found");
+    const query = `SELECT * FROM token WHERE token = '${token}' AND refuser = '${payload.sub}' AND type = '${type}' AND blacklisted = false`;
+    try {
+        const tokenDoc = await db_1.db.queryOne(query);
+        if (!tokenDoc) {
+            throw new Error("Token not found");
+        }
+        return tokenDoc;
     }
-    return tokenDoc;
+    catch (error) {
+        console.error("Error verifying token:", error);
+        throw new ApiError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, "Internal error");
+    }
 };
 const generateAuthTokens = async (user) => {
     const accessTokenExpires = (0, moment_1.default)().add(config_1.default.jwt.accessExpirationMinutes, "minutes");
@@ -46,16 +59,6 @@ const generateAuthTokens = async (user) => {
     const refreshTokenExpires = (0, moment_1.default)().add(config_1.default.jwt.refreshExpirationDays, "days");
     const refreshToken = generateToken(user.user_id, refreshTokenExpires, token_1.tokenTypes.REFRESH);
     await saveToken(refreshToken, user.user_id, refreshTokenExpires, token_1.tokenTypes.REFRESH);
-    console.log({
-        access: {
-            token: accessToken,
-            expires: accessTokenExpires.toDate(),
-        },
-        refresh: {
-            token: refreshToken,
-            expires: refreshTokenExpires.toDate(),
-        },
-    });
     return {
         access: {
             token: accessToken,

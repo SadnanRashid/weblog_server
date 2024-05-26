@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.tokenTypes = void 0;
 const tokenTypes = {
-    ACCESS: "access",
-    REFRESH: "refresh",
-    RESET_PASSWORD: "resetPassword",
-    VERIFY_EMAIL: "verifyEmail",
+    ACCESS: "ACCESS",
+    REFRESH: "REFRESH",
+    RESET_PASSWORD: "RESET_PASSWORD",
+    VERIFY_EMAIL: "VERIFY_EMAIL",
 };
 exports.tokenTypes = tokenTypes;

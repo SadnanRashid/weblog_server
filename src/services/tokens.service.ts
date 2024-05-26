@@ -15,7 +15,6 @@ const generateToken = (
   type: string,
   secret: string = config.jwt.secret
 ) => {
-  console.log("generating token");
   const payload = {
     sub: userId,
     iat: moment().unix(),
@@ -32,27 +31,37 @@ const saveToken = async (
   type: string,
   blacklisted = false
 ) => {
-  const tokenDoc =
-    await db.queryOne(`INSERT INTO tokens (token, userref, expires, type, blacklisted) VALUES 
-    (
-        '${token}',
-        '${userId}',
-        '${expires}',
-        '${type}',
-        '${blacklisted}'
-    )
-    `);
-  return tokenDoc;
+  const expiresISO = expires.toISOString(); // Convert moment date to ISO string for PostgreSQL
+  const query = `INSERT INTO token (token, refuser, expires, type, blacklisted) VALUES (
+    '${token}',
+    '${userId}',
+    '${expiresISO}',
+    '${type}',
+    '${blacklisted}'
+  )`;
+
+  try {
+    const tokenDoc = await db.queryOne(query);
+    return tokenDoc;
+  } catch (error) {
+    console.error("Error saving token:", error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal error");
+  }
 };
 
 const verifyToken = async (token: string, type: string) => {
   const payload = jwt.verify(token, config.jwt.secret);
-  const tokenDoc = await db.queryOne(`
-        SELECT * FROM tokens WHERE token = '${token}' AND user = '${payload.sub}' AND type = '${type}' AND blacklisted = false`);
-  if (!tokenDoc) {
-    throw new Error("Token not found");
+  const query = `SELECT * FROM token WHERE token = '${token}' AND refuser = '${payload.sub}' AND type = '${type}' AND blacklisted = false`;
+  try {
+    const tokenDoc = await db.queryOne(query);
+    if (!tokenDoc) {
+      throw new Error("Token not found");
+    }
+    return tokenDoc;
+  } catch (error) {
+    console.error("Error verifying token:", error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Internal error");
   }
-  return tokenDoc;
 };
 
 const generateAuthTokens = async (user: TUsers) => {
@@ -81,17 +90,6 @@ const generateAuthTokens = async (user: TUsers) => {
     refreshTokenExpires,
     tokenTypes.REFRESH
   );
-
-  console.log({
-    access: {
-      token: accessToken,
-      expires: accessTokenExpires.toDate(),
-    },
-    refresh: {
-      token: refreshToken,
-      expires: refreshTokenExpires.toDate(),
-    },
-  });
 
   return {
     access: {

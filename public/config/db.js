@@ -29,6 +29,7 @@ const db = {
             return res.rows[0];
         }
         catch (err) {
+            console.log(err);
             throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, "Internal error");
         }
         finally {

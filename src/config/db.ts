@@ -23,6 +23,7 @@ const db = {
       const res = await client.query(query);
       return res.rows[0];
     } catch (err) {
+      console.log(err);
       throw new ApiError(httpStatus.BAD_REQUEST, "Internal error");
     } finally {
       client.release();
