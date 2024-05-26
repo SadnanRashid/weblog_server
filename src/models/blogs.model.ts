@@ -1,7 +1,7 @@
 type TBlogs = {
   blog_id?: string;
   title: string;
-  content: object[]; // Adjust this later
+  body: object[]; // Adjust this later
   category: string;
   tags: string[];
   user_id: string;

@@ -9,12 +9,12 @@ const blogs_service_1 = require("../services/blogs.service");
 const getBlog = (0, catchAsync_1.default)(async (req, res) => {
     const id = req.params.id;
     const blog = await blogs_service_1.blogService.getBlog(id);
-    return blog;
+    res.send(blog);
 });
 const createBlog = (0, catchAsync_1.default)(async (req, res) => {
     const data = req.body;
     const blog = await blogs_service_1.blogService.createBlog(data);
-    return blog;
+    res.send(blog);
 });
 exports.blogsController = {
     createBlog,
