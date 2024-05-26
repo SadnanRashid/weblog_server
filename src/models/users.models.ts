@@ -6,4 +6,6 @@ type TUsers = {
   created_at: Date;
 };
 
-export { TUsers };
+type TUsersWithoutPass = Omit<TUsers, "pass">;
+
+export { TUsers, TUsersWithoutPass };

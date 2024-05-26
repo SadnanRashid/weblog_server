@@ -3,13 +3,13 @@ import { tokenService } from "./tokens.service";
 import { userService } from "./users.service";
 import ApiError from "../utils/ApiError";
 import { tokenTypes } from "../config/token";
-import { TUsers } from "../models/users.models";
+import { TUsers, TUsersWithoutPass } from "../models/users.models";
 import { db } from "../config/db";
 
 const loginUserWithEmailAndPassword = async (
   email: string,
   password: string
-): Promise<TUsers> => {
+): Promise<TUsersWithoutPass> => {
   const user = await userService.getUserByEmail(email, password);
   return user;
 };

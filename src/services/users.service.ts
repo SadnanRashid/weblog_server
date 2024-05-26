@@ -1,7 +1,7 @@
 import httpStatus from "http-status";
 import ApiError from "../utils/ApiError";
 import { db } from "../config/db";
-import { TUsers } from "../models/users.models";
+import { TUsers, TUsersWithoutPass } from "../models/users.models";
 import bcrypt from "bcryptjs";
 
 const createUser = async (data: {
@@ -13,7 +13,6 @@ const createUser = async (data: {
   let res: TUsers =
     await db.queryOne(`INSERT INTO USERS (user_id, name, email, pass, created_at)
     VALUES (uuid_generate_v4(),  '${data.name}', '${data.email}', '${password}', CURRENT_TIMESTAMP ) returning *`);
-  console.log(res);
   return res;
 };
 
@@ -27,15 +26,20 @@ const getUser = async (uid: string): Promise<TUsers> => {
 const getUserByEmail = async (
   email: string,
   password: string
-): Promise<TUsers> => {
+): Promise<TUsersWithoutPass> => {
   let res: TUsers = await db.queryOne(
     `SELECT * FROM users WHERE email = '${email}'`
   );
-  const decryptPassword = await bcrypt.hash(res.pass, 8);
-  if (!res || decryptPassword !== password) {
+  const decryptPassword = await bcrypt.compare(password, res.pass);
+  if (!res || !decryptPassword) {
     throw new ApiError(httpStatus.UNAUTHORIZED, "Incorrect email or password");
   }
-  return res;
+  return {
+    name: res.name,
+    email: res.email,
+    created_at: res.created_at,
+    user_id: res.user_id,
+  };
 };
 
 const isEmailTaken = async (queryEmail: string): Promise<Boolean> => {

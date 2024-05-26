@@ -7,7 +7,7 @@ import { TToken } from "../models/token.models";
 import ApiError from "../utils/ApiError";
 import { tokenTypes } from "../config/token";
 import { db } from "../config/db";
-import { TUsers } from "../models/users.models";
+import { TUsers, TUsersWithoutPass } from "../models/users.models";
 
 const generateToken = (
   userId: string,
@@ -64,7 +64,7 @@ const verifyToken = async (token: string, type: string) => {
   }
 };
 
-const generateAuthTokens = async (user: TUsers) => {
+const generateAuthTokens = async (user: TUsersWithoutPass) => {
   const accessTokenExpires = moment().add(
     config.jwt.accessExpirationMinutes,
     "minutes"
