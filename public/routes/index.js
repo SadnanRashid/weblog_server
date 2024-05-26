@@ -7,6 +7,7 @@ exports.router = void 0;
 const express_1 = __importDefault(require("express"));
 const users_route_1 = __importDefault(require("./users.route"));
 const auth_route_1 = __importDefault(require("./auth.route"));
+const blogs_route_1 = __importDefault(require("./blogs.route"));
 const router = express_1.default.Router();
 exports.router = router;
 const defaultRoutes = [
@@ -17,6 +18,10 @@ const defaultRoutes = [
     {
         path: "/auth",
         route: auth_route_1.default,
+    },
+    {
+        path: "/blogs",
+        route: blogs_route_1.default,
     },
 ];
 defaultRoutes.forEach((route) => {
