@@ -14,7 +14,13 @@ const createBlog = catchAsync(async (req, res) => {
   res.send(blog);
 });
 
+const trendingBlogs = catchAsync(async (req, res) => {
+  const blogs = await blogService.trendingBlogs();
+  res.send(blogs);
+});
+
 export const blogsController = {
   createBlog,
   getBlog,
+  trendingBlogs,
 };

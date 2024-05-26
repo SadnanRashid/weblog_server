@@ -21,9 +21,18 @@ const getBlog = async (id) => {
         SELECT * FROM blogs WHERE blog_id = $1
     `, [id]);
     if (!res) {
-        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, "Something went wrong");
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, "Blog does not exist");
     }
     await addViews(res.blog_id);
+    return res;
+};
+const trendingBlogs = async () => {
+    const res = await db_1.db.query(`SELECT blogs.title, blogs.category, blogs.blog_id, blogs.body, COUNT(views.blog_id) as viewcount
+    FROM blogs INNER JOIN views ON views.blog_id = blogs.blog_id
+    GROUP BY blogs.blog_id
+    ORDER BY viewcount
+    FETCH FIRST 5 ROW ONLY
+    `);
     return res;
 };
 const addViews = async (blogid) => {
@@ -36,4 +45,5 @@ exports.blogService = {
     createBlog,
     getBlog,
     addViews,
+    trendingBlogs,
 };
