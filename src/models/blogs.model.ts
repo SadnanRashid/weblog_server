@@ -9,4 +9,10 @@ type TBlogs = {
   updated_at?: Date;
 };
 
-export { TBlogs };
+type TBlogView = {
+  view_id: string;
+  blog_id: string;
+  view_datetime: Date;
+};
+
+export { TBlogs, TBlogView };

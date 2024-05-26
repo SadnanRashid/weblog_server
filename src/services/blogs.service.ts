@@ -1,12 +1,9 @@
 import httpStatus from "http-status";
-import { tokenService } from "./tokens.service";
-import { userService } from "./users.service";
 import ApiError from "../utils/ApiError";
-import { tokenTypes } from "../config/token";
 import { db } from "../config/db";
-import { TBlogs } from "../models/blogs.model";
+import { TBlogs, TBlogView } from "../models/blogs.model";
 
-const createBlog = async (data: TBlogs) => {
+const createBlog = async (data: TBlogs): Promise<TBlogs> => {
   const res = await db.queryOne(
     `
         INSERT INTO blogs (title, content, category, tags, user_id) VALUES
@@ -18,6 +15,26 @@ const createBlog = async (data: TBlogs) => {
   return res;
 };
 
+// Get a single blog post
+const getBlog = async (id: string): Promise<TBlogs> => {
+  const res = await db.queryOne(
+    `
+        SELECT * FROM blogs WHERE blog_id = $1
+    `,
+    [id]
+  );
+  return res;
+};
+
+const addViews = async (blogid: string): Promise<TBlogView> => {
+  const res = await db.queryOne(`INSERT INTO views (blog_id) VALUES ($1)`, [
+    blogid,
+  ]);
+  return res;
+};
+
 export const blogService = {
   createBlog,
+  getBlog,
+  addViews,
 };
