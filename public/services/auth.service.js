@@ -15,26 +15,26 @@ const loginUserWithEmailAndPassword = async (email, password) => {
     return user;
 };
 const logout = async (refreshToken) => {
-    const refreshTokenDoc = await db_1.db.queryOne(`
-        SELECT * FROM tokens WHERE token = '${refreshToken}' AND type = '${token_1.tokenTypes.REFRESH}'
-    `);
+    const refreshTokenDoc = await db_1.db.queryOne(`SELECT * FROM tokens WHERE token = $1 AND type = $2`, [refreshToken, token_1.tokenTypes.REFRESH]);
     if (!refreshTokenDoc) {
         throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "Not found");
     }
-    await db_1.db.queryOne(`
-       DELETE FROM tokens WHERE token = '${refreshToken}' AND type = '${token_1.tokenTypes.REFRESH}'
-    `);
+    await db_1.db.query(`DELETE FROM tokens WHERE token = $1 AND type = $2`, [
+        refreshToken,
+        token_1.tokenTypes.REFRESH,
+    ]);
 };
 const refreshAuth = async (refreshToken) => {
     try {
         const refreshTokenDoc = await tokens_service_1.tokenService.verifyToken(refreshToken, token_1.tokenTypes.REFRESH);
-        const user = await users_service_1.userService.getUser(refreshTokenDoc.user);
+        const user = await users_service_1.userService.getUser(refreshTokenDoc.userref);
         if (!user) {
             throw new Error();
         }
-        await db_1.db.queryOne(`
-       DELETE FROM tokens WHERE token = '${refreshToken}' AND type = '${token_1.tokenTypes.REFRESH}'
-    `);
+        await db_1.db.query(`DELETE FROM tokens WHERE token = $1 AND type = $2`, [
+            refreshToken,
+            token_1.tokenTypes.REFRESH,
+        ]);
         return tokens_service_1.tokenService.generateAuthTokens(user);
     }
     catch (error) {

@@ -11,10 +11,10 @@ import { TUsers, TUsersWithoutPass } from "../models/users.models";
 
 const generateToken = (
   userId: string,
-  expires: any,
+  expires: moment.Moment,
   type: string,
   secret: string = config.jwt.secret
-) => {
+): string => {
   const payload = {
     sub: userId,
     iat: moment().unix(),
@@ -27,21 +27,19 @@ const generateToken = (
 const saveToken = async (
   token: string,
   userId: string,
-  expires: any,
+  expires: moment.Moment,
   type: string,
   blacklisted = false
-) => {
-  const expiresISO = expires.toISOString(); // Convert moment date to ISO string for PostgreSQL
-  const query = `INSERT INTO token (token, refuser, expires, type, blacklisted) VALUES (
-    '${token}',
-    '${userId}',
-    '${expiresISO}',
-    '${type}',
-    '${blacklisted}'
-  )`;
+): Promise<TToken> => {
+  const query = `
+    INSERT INTO token (token, refuser, expires, type, blacklisted)
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING *
+  `;
+  const params = [token, userId, expires.toISOString(), type, blacklisted];
 
   try {
-    const tokenDoc = await db.queryOne(query);
+    const tokenDoc = await db.queryOne(query, params);
     return tokenDoc;
   } catch (error) {
     console.error("Error saving token:", error);
@@ -49,13 +47,17 @@ const saveToken = async (
   }
 };
 
-const verifyToken = async (token: string, type: string) => {
-  const payload = jwt.verify(token, config.jwt.secret);
-  const query = `SELECT * FROM token WHERE token = '${token}' AND refuser = '${payload.sub}' AND type = '${type}' AND blacklisted = false`;
+const verifyToken = async (token: string, type: string): Promise<TToken> => {
   try {
-    const tokenDoc = await db.queryOne(query);
+    const payload = jwt.verify(token, config.jwt.secret) as { sub: string };
+    const query = `
+      SELECT * FROM token WHERE token = $1 AND refuser = $2 AND type = $3 AND blacklisted = false
+    `;
+    const params = [token, payload.sub, type];
+    const tokenDoc = await db.queryOne(query, params);
+
     if (!tokenDoc) {
-      throw new Error("Token not found");
+      throw new ApiError(httpStatus.NOT_FOUND, "Token not found");
     }
     return tokenDoc;
   } catch (error) {
@@ -103,7 +105,7 @@ const generateAuthTokens = async (user: TUsersWithoutPass) => {
   };
 };
 
-const generateVerifyEmailToken = async (user: TUsers) => {
+const generateVerifyEmailToken = async (user: TUsers): Promise<string> => {
   const expires = moment().add(
     config.jwt.verifyEmailExpirationMinutes,
     "minutes"

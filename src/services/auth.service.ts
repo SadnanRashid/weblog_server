@@ -3,8 +3,8 @@ import { tokenService } from "./tokens.service";
 import { userService } from "./users.service";
 import ApiError from "../utils/ApiError";
 import { tokenTypes } from "../config/token";
-import { TUsers, TUsersWithoutPass } from "../models/users.models";
 import { db } from "../config/db";
+import { TUsers, TUsersWithoutPass } from "../models/users.models";
 
 const loginUserWithEmailAndPassword = async (
   email: string,
@@ -15,15 +15,17 @@ const loginUserWithEmailAndPassword = async (
 };
 
 const logout = async (refreshToken: string): Promise<void> => {
-  const refreshTokenDoc = await db.queryOne(`
-        SELECT * FROM tokens WHERE token = '${refreshToken}' AND type = '${tokenTypes.REFRESH}'
-    `);
+  const refreshTokenDoc = await db.queryOne(
+    `SELECT * FROM tokens WHERE token = $1 AND type = $2`,
+    [refreshToken, tokenTypes.REFRESH]
+  );
   if (!refreshTokenDoc) {
     throw new ApiError(httpStatus.NOT_FOUND, "Not found");
   }
-  await db.queryOne(`
-       DELETE FROM tokens WHERE token = '${refreshToken}' AND type = '${tokenTypes.REFRESH}'
-    `);
+  await db.query(`DELETE FROM tokens WHERE token = $1 AND type = $2`, [
+    refreshToken,
+    tokenTypes.REFRESH,
+  ]);
 };
 
 const refreshAuth = async (refreshToken: string) => {
@@ -32,13 +34,14 @@ const refreshAuth = async (refreshToken: string) => {
       refreshToken,
       tokenTypes.REFRESH
     );
-    const user = await userService.getUser(refreshTokenDoc.user);
+    const user = await userService.getUser(refreshTokenDoc.userref);
     if (!user) {
       throw new Error();
     }
-    await db.queryOne(`
-       DELETE FROM tokens WHERE token = '${refreshToken}' AND type = '${tokenTypes.REFRESH}'
-    `);
+    await db.query(`DELETE FROM tokens WHERE token = $1 AND type = $2`, [
+      refreshToken,
+      tokenTypes.REFRESH,
+    ]);
     return tokenService.generateAuthTokens(user);
   } catch (error) {
     throw new ApiError(httpStatus.UNAUTHORIZED, "Please authenticate");

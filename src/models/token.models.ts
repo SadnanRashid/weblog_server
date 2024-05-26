@@ -1,6 +1,6 @@
 type TToken = {
   token_id: string;
-  useref: string;
+  userref: string;
   token: string;
   type: "REFRESH" | "RESET_PASSWORD" | "VERIFY_EMAIL";
   expires: Date;

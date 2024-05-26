@@ -9,31 +9,36 @@ const ApiError_1 = __importDefault(require("../utils/ApiError"));
 const http_status_1 = __importDefault(require("http-status"));
 let client;
 const db = {
-    query: async function (query) {
+    query: async function (query, params = []) {
+        let client;
         try {
             client = await index_1.pool.connect();
-            const res = await client.query(query);
+            const res = await client.query(query, params);
             return res.rows;
         }
         catch (err) {
+            console.error(err);
             throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, "Internal error");
         }
         finally {
-            client.release();
+            if (client)
+                client.release();
         }
     },
-    queryOne: async function (query) {
+    queryOne: async function (query, params = []) {
+        let client;
         try {
             client = await index_1.pool.connect();
-            const res = await client.query(query);
+            const res = await client.query(query, params);
             return res.rows[0];
         }
         catch (err) {
-            console.log(err);
+            console.error(err);
             throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, "Internal error");
         }
         finally {
-            client.release();
+            if (client)
+                client.release();
         }
     },
 };

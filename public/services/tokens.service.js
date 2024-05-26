@@ -21,16 +21,14 @@ const generateToken = (userId, expires, type, secret = config_1.default.jwt.secr
     return jsonwebtoken_1.default.sign(payload, secret);
 };
 const saveToken = async (token, userId, expires, type, blacklisted = false) => {
-    const expiresISO = expires.toISOString(); // Convert moment date to ISO string for PostgreSQL
-    const query = `INSERT INTO token (token, refuser, expires, type, blacklisted) VALUES (
-    '${token}',
-    '${userId}',
-    '${expiresISO}',
-    '${type}',
-    '${blacklisted}'
-  )`;
+    const query = `
+    INSERT INTO token (token, refuser, expires, type, blacklisted)
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING *
+  `;
+    const params = [token, userId, expires.toISOString(), type, blacklisted];
     try {
-        const tokenDoc = await db_1.db.queryOne(query);
+        const tokenDoc = await db_1.db.queryOne(query, params);
         return tokenDoc;
     }
     catch (error) {
@@ -39,12 +37,15 @@ const saveToken = async (token, userId, expires, type, blacklisted = false) => {
     }
 };
 const verifyToken = async (token, type) => {
-    const payload = jsonwebtoken_1.default.verify(token, config_1.default.jwt.secret);
-    const query = `SELECT * FROM token WHERE token = '${token}' AND refuser = '${payload.sub}' AND type = '${type}' AND blacklisted = false`;
     try {
-        const tokenDoc = await db_1.db.queryOne(query);
+        const payload = jsonwebtoken_1.default.verify(token, config_1.default.jwt.secret);
+        const query = `
+      SELECT * FROM token WHERE token = $1 AND refuser = $2 AND type = $3 AND blacklisted = false
+    `;
+        const params = [token, payload.sub, type];
+        const tokenDoc = await db_1.db.queryOne(query, params);
         if (!tokenDoc) {
-            throw new Error("Token not found");
+            throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "Token not found");
         }
         return tokenDoc;
     }
