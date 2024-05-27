@@ -15,6 +15,14 @@ const createBlog = async (data: TBlogs): Promise<TBlogs> => {
   return res;
 };
 
+const paginateBlogs = async (limit: number, skip: number) => {
+  const res = await db.query(
+    `SELECT * FROM blogs FETCH FIRST $1 ROW ONLY OFFSET $2`,
+    [limit, skip]
+  );
+  return res;
+};
+
 // Get a single blog post
 const getBlog = async (id: string): Promise<TBlogs> => {
   const res = await db.queryOne(
@@ -53,4 +61,5 @@ export const blogService = {
   getBlog,
   addViews,
   trendingBlogs,
+  paginateBlogs,
 };

@@ -15,6 +15,10 @@ const createBlog = async (data) => {
   `, [data.title, data.body, data.category, data.tags, data.user_id]);
     return res;
 };
+const paginateBlogs = async (limit, skip) => {
+    const res = await db_1.db.query(`SELECT * FROM blogs FETCH FIRST $1 ROW ONLY OFFSET $2`, [limit, skip]);
+    return res;
+};
 // Get a single blog post
 const getBlog = async (id) => {
     const res = await db_1.db.queryOne(`
@@ -46,4 +50,5 @@ exports.blogService = {
     getBlog,
     addViews,
     trendingBlogs,
+    paginateBlogs,
 };

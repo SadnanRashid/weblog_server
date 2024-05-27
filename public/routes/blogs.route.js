@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const blogs_controller_1 = require("../controllers/blogs.controller");
 const blogsRouter = express_1.default.Router();
 blogsRouter.get("/get/trending", blogs_controller_1.blogsController.trendingBlogs);
+blogsRouter.get("/get/paginate", blogs_controller_1.blogsController.paginateBlogs);
 blogsRouter.get("/get/:id", blogs_controller_1.blogsController.getBlog);
 blogsRouter.post("/post", blogs_controller_1.blogsController.createBlog);
 exports.default = blogsRouter;
