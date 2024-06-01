@@ -28,7 +28,7 @@ const paginateBlogs = (0, catchAsync_1.default)(async (req, res) => {
     res.send(blogs);
 });
 const getBlogComments = (0, catchAsync_1.default)(async (req, res) => {
-    const id = req.query.id;
+    const id = req.params.id;
     const comments = await blogs_service_1.blogService.getBlogComments(id);
     res.send(comments);
 });

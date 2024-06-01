@@ -30,7 +30,7 @@ const paginateBlogs = catchAsync(async (req, res) => {
 });
 
 const getBlogComments = catchAsync(async (req, res) => {
-  const id: string = req.query.id as string;
+  const id: string = req.params.id;
   const comments = await blogService.getBlogComments(id);
   res.send(comments);
 });
