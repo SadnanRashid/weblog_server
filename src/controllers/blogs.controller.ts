@@ -29,9 +29,23 @@ const paginateBlogs = catchAsync(async (req, res) => {
   res.send(blogs);
 });
 
+const getBlogComments = catchAsync(async (req, res) => {
+  const id: string = req.query.id as string;
+  const comments = await blogService.getBlogComments(id);
+  res.send(comments);
+});
+
+const postBlogComment = catchAsync(async (req, res) => {
+  const { blog_id, body, user_id } = req.body;
+  const comment = await blogService.postBlogComment(blog_id, body, user_id);
+  return comment;
+});
+
 export const blogsController = {
   createBlog,
   getBlog,
   trendingBlogs,
   paginateBlogs,
+  getBlogComments,
+  postBlogComment,
 };

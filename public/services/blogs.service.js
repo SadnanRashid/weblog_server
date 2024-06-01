@@ -21,14 +21,33 @@ const paginateBlogs = async (limit, skip) => {
 };
 // Get a single blog post
 const getBlog = async (id) => {
-    const res = await db_1.db.queryOne(`
-        SELECT * FROM blogs WHERE blog_id = $1
-    `, [id]);
-    if (!res) {
+    const resBlog = await db_1.db.queryOne(`SELECT blogs.blog_id, blogs.title, blogs.body, blogs.category, blogs.tags, users.user_id, users.name, COUNT(views.blog_id)
+     AS viewcount 
+     FROM blogs
+     INNER JOIN users ON blogs.user_id = users.user_id
+     INNER JOIN views ON views.blog_id = blogs.blog_id
+     WHERE blogs.blog_id = $1
+     GROUP BY blogs.blog_id, users.user_id
+     `, [id]);
+    if (!resBlog) {
         throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, "Blog does not exist");
     }
-    await addViews(res.blog_id);
-    return res;
+    await addViews(resBlog.blog_id);
+    return resBlog;
+};
+const getBlogComments = async (id) => {
+    const resComments = await db_1.db.query(`SELECT comments.comment_id, comments.body, comments.created_at, users.user_id, users.name
+    FROM comments
+    INNER JOIN users ON comments.user_id = users.user_id
+     WHERE comments.blog_id = $1 `, [id]);
+    if (!resComments) {
+        throw new ApiError_1.default(http_status_1.default.NO_CONTENT, "No Comments for this blog");
+    }
+    return resComments;
+};
+const postBlogComment = async (blog_id, body, user_id) => {
+    const createComment = await db_1.db.queryOne(`INSERT INTO comments blog_id, body, user_id VALUES ($1, $2, $3) returning *`, [blog_id, body, user_id]);
+    return createComment;
 };
 const trendingBlogs = async () => {
     const res = await db_1.db.query(`SELECT blogs.title, blogs.category, blogs.blog_id, blogs.body, COUNT(views.blog_id) as viewcount
@@ -51,4 +70,6 @@ exports.blogService = {
     addViews,
     trendingBlogs,
     paginateBlogs,
+    getBlogComments,
+    postBlogComment,
 };
