@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const helmet = require("helmet");
@@ -11,7 +14,7 @@ const morgan = require("./config/morgan");
 const { jwtStrategy } = require("./config/passport");
 const { authLimiter } = require("./middlewares/rateLimiter");
 const { errorConverter, errorHandler } = require("./middlewares/error");
-const ApiError = require("./utils/ApiError");
+const ApiError_1 = __importDefault(require("./utils/ApiError"));
 const routes_1 = require("./routes");
 const app = express();
 if (config.env !== "test") {
@@ -42,7 +45,7 @@ if (config.env === "production") {
 app.use("/v1", routes_1.router);
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
-    next(new ApiError(httpStatus.NOT_FOUND, "Not found"));
+    next(new ApiError_1.default(httpStatus.NOT_FOUND, "Not found"));
 });
 // convert error to ApiError, if needed
 app.use(errorConverter);
