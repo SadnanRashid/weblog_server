@@ -46,7 +46,7 @@ const getBlogComments = async (id) => {
     return resComments;
 };
 const postBlogComment = async (blog_id, body, user_id) => {
-    const createComment = await db_1.db.queryOne(`INSERT INTO comments blog_id, body, user_id VALUES ($1, $2, $3) returning *`, [blog_id, body, user_id]);
+    const createComment = await db_1.db.queryOne(`INSERT INTO comments (blog_id, body, user_id) VALUES ($1, $2, $3) returning *`, [blog_id, body, user_id]);
     return createComment;
 };
 const trendingBlogs = async () => {

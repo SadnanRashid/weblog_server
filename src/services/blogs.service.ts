@@ -68,7 +68,7 @@ const postBlogComment = async (
   user_id: string
 ): Promise<TComment> => {
   const createComment = await db.queryOne(
-    `INSERT INTO comments blog_id, body, user_id VALUES ($1, $2, $3) returning *`,
+    `INSERT INTO comments (blog_id, body, user_id) VALUES ($1, $2, $3) returning *`,
     [blog_id, body, user_id]
   );
   return createComment;
