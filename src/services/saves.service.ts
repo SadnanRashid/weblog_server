@@ -38,4 +38,4 @@ const getSavesByBlogId = async (blog_id: string): Promise<TSave[] | null> => {
   return res;
 };
 
-export { getSavesByBlogId, getSavesByUserId, saveBlog };
+export const savesService = { getSavesByBlogId, getSavesByUserId, saveBlog };
