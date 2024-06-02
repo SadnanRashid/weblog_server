@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const blogs_controller_1 = require("../controllers/blogs.controller");
+const saves_controller_1 = require("../controllers/saves.controller");
 const blogsRouter = express_1.default.Router();
 blogsRouter.get("/get/trending", blogs_controller_1.blogsController.trendingBlogs);
 blogsRouter.get("/get/paginate", blogs_controller_1.blogsController.paginateBlogs);
@@ -12,4 +13,5 @@ blogsRouter.get("/get/comments/:id", blogs_controller_1.blogsController.getBlogC
 blogsRouter.get("/get/:id", blogs_controller_1.blogsController.getBlog);
 blogsRouter.post("/post", blogs_controller_1.blogsController.createBlog);
 blogsRouter.post("/post/comment", blogs_controller_1.blogsController.postBlogComment);
+blogsRouter.post("/post/save", saves_controller_1.savesController.saveBlog);
 exports.default = blogsRouter;
