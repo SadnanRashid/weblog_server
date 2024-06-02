@@ -1,20 +1,14 @@
 import httpStatus from "http-status";
 import ApiError from "../utils/ApiError";
 import { db } from "../config/db";
-import {
-  TBlogs,
-  TBlogView,
-  TFullBlogPost,
-  TComment,
-} from "../models/blogs.model";
 import { TSave } from "../models/saves.model";
 
 const saveBlog = async (blog_id: string, user_id: string): Promise<TSave> => {
   const check = await db.queryOne(
-    `SELECT * FROM saves WHERE user_id = $1 AND blog_id = $2`,
+    `SELECT * FROM saves WHERE user_id = $1 AND blog_id = $2 RETURNING *`,
     [user_id, blog_id]
   );
-  if (check) {
+  if (check.save_id) {
     const res = await db.queryOne(
       `DELETE FROM saves WHERE user_id = $1 AND blog_id = $2 RETURNING *`,
       [user_id, blog_id]
@@ -43,3 +37,5 @@ const getSavesByBlogId = async (blog_id: string): Promise<TSave[] | null> => {
   );
   return res;
 };
+
+export { getSavesByBlogId, getSavesByUserId, saveBlog };
