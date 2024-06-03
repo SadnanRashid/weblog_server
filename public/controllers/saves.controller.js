@@ -10,6 +10,6 @@ const saves_service_1 = require("../services/saves.service");
 const saveBlog = (0, catchAsync_1.default)(async (req, res) => {
     const { user_id, blog_id } = req.body;
     const result = await saves_service_1.savesService.saveBlog(blog_id, user_id);
-    res.status(http_status_1.default.CREATED).send("Blog saved");
+    res.status(http_status_1.default.CREATED).send(result);
 });
 exports.savesController = { saveBlog };

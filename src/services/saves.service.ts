@@ -5,10 +5,10 @@ import { TSave } from "../models/saves.model";
 
 const saveBlog = async (blog_id: string, user_id: string): Promise<TSave> => {
   const check = await db.queryOne(
-    `SELECT * FROM saves WHERE user_id = $1 AND blog_id = $2 RETURNING *`,
+    `SELECT * FROM saves WHERE user_id = $1 AND blog_id = $2`,
     [user_id, blog_id]
   );
-  if (check.save_id) {
+  if (check) {
     const res = await db.queryOne(
       `DELETE FROM saves WHERE user_id = $1 AND blog_id = $2 RETURNING *`,
       [user_id, blog_id]

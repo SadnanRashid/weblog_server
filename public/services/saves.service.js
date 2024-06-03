@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.savesService = void 0;
 const db_1 = require("../config/db");
 const saveBlog = async (blog_id, user_id) => {
-    const check = await db_1.db.queryOne(`SELECT * FROM saves WHERE user_id = $1 AND blog_id = $2 RETURNING *`, [user_id, blog_id]);
-    if (check.save_id) {
+    const check = await db_1.db.queryOne(`SELECT * FROM saves WHERE user_id = $1 AND blog_id = $2`, [user_id, blog_id]);
+    if (check) {
         const res = await db_1.db.queryOne(`DELETE FROM saves WHERE user_id = $1 AND blog_id = $2 RETURNING *`, [user_id, blog_id]);
         return res;
     }
