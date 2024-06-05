@@ -27,7 +27,7 @@ const logout = async (refreshToken) => {
 const refreshAuth = async (refreshToken) => {
     try {
         const refreshTokenDoc = await tokens_service_1.tokenService.verifyToken(refreshToken, token_1.tokenTypes.REFRESH);
-        const user = await users_service_1.userService.getUser(refreshTokenDoc.userref);
+        const user = await users_service_1.userService.getUser(refreshTokenDoc.refuser);
         if (!user) {
             throw new Error();
         }
@@ -35,7 +35,8 @@ const refreshAuth = async (refreshToken) => {
             refreshToken,
             token_1.tokenTypes.REFRESH,
         ]);
-        return tokens_service_1.tokenService.generateAuthTokens(user);
+        const ret = tokens_service_1.tokenService.generateAuthTokens(user);
+        return ret;
     }
     catch (error) {
         throw new ApiError_1.default(http_status_1.default.UNAUTHORIZED, "Please authenticate");

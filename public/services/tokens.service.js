@@ -44,6 +44,7 @@ const verifyToken = async (token, type) => {
     `;
         const params = [token, payload.sub, type];
         const tokenDoc = await db_1.db.queryOne(query, params);
+        console.log(token, payload.sub, type);
         if (!tokenDoc) {
             throw new ApiError_1.default(http_status_1.default.NOT_FOUND, "Token not found");
         }
