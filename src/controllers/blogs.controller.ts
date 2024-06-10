@@ -39,7 +39,7 @@ const getBlogComments = catchAsync(async (req, res) => {
 const postBlogComment = catchAsync(async (req, res) => {
   const { blog_id, body, user_id } = req.body;
   const comment = await blogService.postBlogComment(blog_id, body, user_id);
-  res.send(comment);
+  res.send(comment); 
 });
 
 export const blogsController = {
